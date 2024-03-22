@@ -21,11 +21,10 @@ export const initializeMessage = () => {
   });
 };
 
-export const injectScript = (tsCode: string) => {
-  const jsCode = transpile(tsCode);
+export const injectScript = (jsCode: string) => {
   sendMessage<SCRIPT_MESSAGE>({
     type: "EXECUTE_SCRIPT",
-    script: jsCode || "",
+    script: jsCode,
     tabId: chrome.devtools.inspectedWindow.tabId,
   });
 };

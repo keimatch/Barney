@@ -41,6 +41,8 @@ const Editor = () => {
       onMount,
       onChangeMonaco,
       handleSelectNode,
+
+      bundle,
     },
   ] = useEditor();
 
@@ -56,13 +58,14 @@ const Editor = () => {
         handleFormat={handleFormat}
         onChangeName={onChangeMeta("name")}
         onSave={onSave}
+        bundle={bundle}
       />
 
       <Box id="main-container" flex={1} display="flex">
         <Box
-          width="200px"
           borderRight="0.5px solid rgba(255, 255,255,0.1)"
           overflowX="hidden"
+          width="200px"
         >
           <Folder
             folder={root}

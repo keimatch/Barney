@@ -12,6 +12,7 @@ import {
   OnMount,
   useMonaco,
 } from "@monaco-editor/react";
+import axios from "axios";
 
 import { useRouter } from "./useRouter";
 import { Node, Language, NodeType } from "../types/experience";
@@ -33,8 +34,14 @@ import {
   transpile,
   transform,
   findPathById,
+  preBundle,
+  BUNDLE_FILE_ID,
 } from "../logics/editor";
 import { difference, xor } from "../util/util";
+
+const axiosInstance = axios.create({
+  baseURL: "http://localhost:5000",
+});
 
 export const useEditor = () => {
   // hooks ****************
@@ -154,7 +161,7 @@ export const useEditor = () => {
   // func - editor ****************
   const moveToFileList = useCallback(() => {
     if (isEditedAfterSave) {
-      const result = confirm("未保存の変更がありますがいいの？");
+      const result = confirm("未保存の変更があるけどいいの？");
       if (!result) return;
     }
     moveTo("filelist");
@@ -238,12 +245,23 @@ export const useEditor = () => {
     setSelectedNodeId(nodeId);
   }, []);
 
-  const handleInjectScript = useCallback(() => {
-    if (selectedNode?.type !== "typescript") return;
-    const tsCode = leftEditorRef.current?.getValue();
-    if (!tsCode) return;
-    injectScript(tsCode);
-  }, [selectedNode]);
+  const handleInjectScript = useCallback(
+    ({ code, type }: { code: string; type: "typescript" | "javascript" }) => {
+      // typeがjsとts以外の場合は何もしない
+      if (type !== "typescript" && type !== "javascript") {
+        console.error("type is not javascript or typescript");
+        return;
+      }
+
+      if (type === "typescript") {
+        const js = transpile(code);
+        injectScript(js);
+      } else {
+        injectScript(code);
+      }
+    },
+    []
+  );
 
   const handleInsertCss = useCallback(() => {
     if (selectedNode?.type !== "css") return;
@@ -266,7 +284,10 @@ export const useEditor = () => {
     ).forEach((path) => {
       console.info("created filepath is: ", path);
       const file = monacoFiles.find((file) => file.filename === path);
-      if (!file) return;
+      if (!file) {
+        console.error("file is not found");
+        return;
+      }
       monaco.editor.createModel(
         file.data,
         file.type,
@@ -304,7 +325,7 @@ export const useEditor = () => {
     (monaco) => {
       updateModels();
       monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-        target: monaco.languages.typescript.ScriptTarget.ES2016,
+        target: monaco.languages.typescript.ScriptTarget.ESNext,
         module: monaco.languages.typescript.ModuleKind.ESNext,
         allowNonTsExtensions: false,
       });
@@ -329,6 +350,71 @@ export const useEditor = () => {
       }
     },
     [monacoFiles]
+  );
+
+  const saveBundleFile = useCallback(
+    (data: string) => {
+      if (!monaco) {
+        return;
+      }
+
+      console.log("saveBundleFile");
+
+      const parentId = folder.id;
+      const bundle: Node = {
+        id: BUNDLE_FILE_ID,
+        parentId,
+        name: addExtensionToFileName(BUNDLE_FILE_ID, "javascript"),
+        type: "javascript",
+        content: data,
+        hidden: false,
+      };
+
+      const updatedFolder = updateNodePropertyById(
+        folder,
+        parentId,
+        "children",
+        (children) => {
+          if (!children) return [bundle];
+          const bundleExists = children.find((child) => child.id === bundle.id);
+          if (bundleExists) {
+            return children.map((child) => {
+              if (child.id === bundle.id) return bundle;
+              return child;
+            });
+          }
+          return [bundle, ...children];
+        }
+      );
+
+      setFolder({ ...updatedFolder });
+
+      const path = findPathById([updatedFolder], bundle.id);
+      if (!path) {
+        console.error("path is not found");
+        return;
+      }
+      const jsModel = monaco.editor.getModel(
+        monaco.Uri.from({
+          scheme: "file",
+          path,
+        })
+      );
+      if (!jsModel) {
+        console.log("createdModel is: ", path);
+        monaco.editor.createModel(
+          data,
+          "javascript",
+          monaco.Uri.from({
+            scheme: "file",
+            path,
+          })
+        );
+        return;
+      }
+      jsModel.setValue(data);
+    },
+    [folder, monaco]
   );
 
   const createFile = useCallback(
@@ -396,6 +482,13 @@ export const useEditor = () => {
     },
     [folder]
   );
+
+  const bundle = useCallback(async () => {
+    const virtualFiles = preBundle(monacoFiles);
+    const out = await axiosInstance.post("/rollup", virtualFiles);
+    const code = out.data;
+    saveBundleFile(code);
+  }, [monacoFiles, saveBundleFile]);
 
   //effect ****************
   // connecterの初期化
@@ -465,6 +558,8 @@ export const useEditor = () => {
 
       handleFormat,
       onSave,
+
+      bundle,
     },
   ] as const;
 };

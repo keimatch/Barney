@@ -11,6 +11,7 @@ const Header = ({
   handleFormat,
   onChangeName,
   onSave,
+  bundle,
 }: {
   name: string;
   isEdited: boolean;
@@ -18,6 +19,7 @@ const Header = ({
   moveToFileList: () => void;
   onChangeName: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSave: () => void;
+  bundle: () => void;
 }) => {
   return (
     <Box
@@ -73,9 +75,7 @@ const Header = ({
           size="sm"
           icon={<SiRollupdotjs />}
           variant="ghost"
-          onClick={() => {
-            // build(root);
-          }}
+          onClick={bundle}
         />
         <IconButton
           aria-label="back"

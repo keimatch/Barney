@@ -3,6 +3,8 @@ import ts from "typescript";
 import { Language, Node, NodeType } from "../types/experience";
 import { FlatPath } from "../types/editor";
 
+export const BUNDLE_FILE_ID = "bundle";
+
 export const updateNodePropertyById = <T extends keyof Node>(
   node: Node,
   targetId: string,
@@ -32,7 +34,7 @@ export const transpile = (tsCode: string) => {
   const jsCode = ts.transpileModule(tsCode, {
     compilerOptions: {
       module: ts.ModuleKind.ESNext,
-      target: ts.ScriptTarget.ESNext,
+      target: ts.ScriptTarget.ES2015,
     },
   });
   return jsCode.outputText;
@@ -164,4 +166,17 @@ export const findPathById = (
     }
   }
   return null; // 該当するファイルまたはフォルダが見つからなかった場合
+};
+
+export const preBundle = (files: FlatPath[]) => {
+  // jsのファイルを取り出す
+  const jsFiles = files.filter((file) => file.type === "javascript");
+  // item.filenameから拡張子を取り除いたものをnameとする
+  const virtualFiles: Record<string, string> = {};
+  jsFiles.forEach((item) => {
+    const name = item.filename.replace(/\..+$/, "");
+    virtualFiles[name] = item.data;
+  });
+
+  return virtualFiles;
 };
