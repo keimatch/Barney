@@ -1,0 +1,28 @@
+{
+  "name": "Barney",
+  "manifest_version": 2,
+  "version": "2",
+  "description": "Barney is a browser extension that allows you to run Typescript code on any website.",
+  "permissions": [
+    "tabs",
+    "storage",
+    "webRequest",
+    "webRequestBlocking",
+    "*://*/*"
+  ],
+  "devtools_page": "devtools_page.html",
+  "background": {
+    "scripts": ["js/background.js"],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "all_frames": false,
+      "js": ["js/content_script.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": ["jquery/images/*.png", "js/*"],
+  "content_security_policy": "script-src 'self' https://cdn.jsdelivr.net https://cdn.ampproject.org/; object-src 'self'"
+}
