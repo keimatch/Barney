@@ -20,7 +20,7 @@ import {
 } from "react-icons/vsc";
 import { RiDeleteBin3Line } from "react-icons/ri";
 
-import { Node, NodeType } from "../../../types/experience";
+import { Language, Node, NodeType } from "../../../types/experience";
 import { File } from "./file";
 
 const offsetPd = 5;
@@ -65,9 +65,12 @@ const Folder = ({
     return editingNode === folder.id;
   }, [editingNode, folder.id]);
 
-  const onCreateFile = useCallback(() => {
-    handleCreateFile({ parentId: folder.id, type: "typescript" });
-  }, [folder.id, handleCreateFile]);
+  const onCreateFile = useCallback(
+    (fileType: Language) => () => {
+      handleCreateFile({ parentId: folder.id, type: fileType });
+    },
+    [folder.id, handleCreateFile]
+  );
 
   const onCreateFolder = useCallback(() => {
     handleCreateFile({ parentId: folder.id, type: "folder" });
@@ -201,8 +204,20 @@ const Folder = ({
                 <MenuItem onClick={onCreateFolder} icon={<VscFolder />}>
                   New Folder
                 </MenuItem>
-                <MenuItem onClick={onCreateFile} icon={<VscFileCode />}>
+                <MenuItem
+                  onClick={onCreateFile("typescript")}
+                  icon={<VscFileCode />}
+                >
                   New Typescript
+                </MenuItem>
+                <MenuItem onClick={onCreateFile("css")} icon={<VscFileCode />}>
+                  New CSS
+                </MenuItem>
+                <MenuItem
+                  onClick={onCreateFile("markdown")}
+                  icon={<VscFileCode />}
+                >
+                  New Markdown
                 </MenuItem>
                 <MenuItem
                   onClick={onStartEdit(folder.id)}

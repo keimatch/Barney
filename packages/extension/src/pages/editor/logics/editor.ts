@@ -85,6 +85,7 @@ const EXTENSION_MAP: Record<Language, string> = {
   javascript: "js",
   css: "css",
   html: "html",
+  markdown: "md",
 };
 
 export const addExtensionToFileName = (name: string, type: NodeType) => {

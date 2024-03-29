@@ -494,25 +494,18 @@ export const useEditor = () => {
         content: "",
       };
 
-      const jsFile: Node = {
-        id: convertToJsId(id),
-        parentId,
-        name: addExtensionToFileName(id, "javascript"),
-        type: "javascript",
-        content: "",
-        hidden: true,
-      };
-
       newFiles.push(newFile);
-      newFiles.push(jsFile);
-
-      const newFolder: Node = {
-        id: id,
-        name: id,
-        parentId,
-        type: "folder",
-        children: [],
-      };
+      if (type === "typescript") {
+        const jsFile: Node = {
+          id: convertToJsId(id),
+          parentId,
+          name: addExtensionToFileName(id, "javascript"),
+          type: "javascript",
+          content: "",
+          hidden: true,
+        };
+        newFiles.push(jsFile);
+      }
 
       const updatedFolder = updateNodePropertyById(
         folder,
@@ -520,7 +513,16 @@ export const useEditor = () => {
         "children",
         (children) => {
           if (!children) return [newFile];
-          if (type === "folder") return [...children, newFolder];
+          if (type === "folder") {
+            const newFolder: Node = {
+              id: id,
+              name: id,
+              parentId,
+              type: "folder",
+              children: [],
+            };
+            return [...children, newFolder];
+          }
           return [...children, ...newFiles];
         }
       );

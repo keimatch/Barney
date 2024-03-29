@@ -6,7 +6,12 @@ export interface Experience {
   folder: Node;
 }
 
-export type Language = "typescript" | "css" | "html" | "javascript";
+export type Language =
+  | "typescript"
+  | "css"
+  | "html"
+  | "javascript"
+  | "markdown";
 export type NodeType = "folder" | Language;
 
 export interface Node {

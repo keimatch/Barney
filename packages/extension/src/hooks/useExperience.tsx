@@ -68,6 +68,13 @@ export const defaultFolderRoot: Node = {
       type: "css",
       content: "p {color: red;}",
     },
+    {
+      id: "4",
+      name: "readme.md",
+      parentId: "1",
+      type: "markdown",
+      content: "# Hello World",
+    },
   ],
 };
 
