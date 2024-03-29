@@ -183,3 +183,23 @@ export const preBundle = (files: FlatPath[]) => {
 
   return virtualFiles;
 };
+
+export const extractTsContents = (
+  node: Node
+): { id: string; content: string }[] => {
+  const ids: ReturnType<typeof extractTsContents> = [];
+
+  // node.typeが'typescript'の場合のみidを追加
+  if (node.type === "typescript") {
+    ids.push({ id: node.id, content: node.content! });
+  }
+
+  // 子ノードが存在する場合、それらのidも条件に基づいて再帰的に抽出
+  if (node.children) {
+    node.children.forEach((child) => {
+      ids.push(...extractTsContents(child));
+    });
+  }
+
+  return ids;
+};

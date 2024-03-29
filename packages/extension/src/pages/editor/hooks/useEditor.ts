@@ -36,12 +36,14 @@ import {
   findPathById,
   preBundle,
   BUNDLE_FILE_ID,
+  extractTsContents,
 } from "../logics/editor";
 import { difference, xor } from "../../../util/util";
 import { Setting } from "../../../types/editor";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "../../../db/experience";
 import { defaultSetting } from "../constants/setting";
+import ts from "typescript";
 
 const axiosInstance = axios.create({
   baseURL: "http://localhost:5000",
@@ -128,6 +130,48 @@ export const useEditor = () => {
       setIsEditedAfterSave(true);
     },
     [folder, scriptType, monaco, setting]
+  );
+
+  const transpileAllTsFile = useCallback(
+    (esmVersion: ts.ScriptTarget) => {
+      console.log("esmVersion", esmVersion);
+      if (!monaco) {
+        console.error("monaco is not found");
+        return;
+      }
+      const targetIds = extractTsContents(folder);
+      let newFolder = structuredClone(folder);
+      targetIds.forEach((data) => {
+        const { id, content } = data;
+        const jsCode = transpile(content, esmVersion);
+        const jsId = convertToJsId(id);
+        newFolder = updateNodePropertyById(newFolder, jsId, "content", jsCode);
+
+        const path = findPathById([newFolder], jsId);
+        if (!path) {
+          console.error("path is not found");
+          return;
+        }
+
+        const model = monaco.editor.getModel(
+          monaco.Uri.from({
+            scheme: "file",
+            path,
+          })
+        );
+        if (!model) {
+          console.error("model is not found");
+          return;
+        }
+        model.setValue(jsCode);
+        if (scriptType === "javascript" && selectedNodeId === id) {
+          leftEditorRef.current?.setModel(model);
+        }
+      });
+
+      setFolder({ ...newFolder });
+    },
+    [folder, monaco, scriptType, selectedNodeId]
   );
 
   const onChangeMeta = useCallback(
@@ -253,9 +297,19 @@ export const useEditor = () => {
     [onChange]
   );
 
-  const handleSelectNode = useCallback((nodeId: string) => {
-    setSelectedNodeId(nodeId);
-  }, []);
+  const handleSelectNode = useCallback(
+    (nodeId: string) => {
+      setSelectedNodeId(nodeId);
+      if (!monaco) return;
+      const path = findPathById([folder], nodeId);
+      const selectedModel = monaco.editor
+        .getModels()
+        .find((model) => model.uri.path === path);
+      if (!selectedModel) return;
+      leftEditorRef.current?.setModel(selectedModel);
+    },
+    [setSelectedNodeId, folder, monaco]
+  );
 
   const handleInjectScript = useCallback(
     ({ code, type }: { code: string; type: "typescript" | "javascript" }) => {
@@ -500,9 +554,13 @@ export const useEditor = () => {
     saveBundleFile(code);
   }, [monacoFiles, saveBundleFile]);
 
-  const saveSetting = useCallback(async (setting: Setting) => {
-    await db.settings.put(setting);
-  }, []);
+  const saveSetting = useCallback(
+    async (setting: Setting) => {
+      transpileAllTsFile(setting.esmVersion);
+      await db.settings.put(setting);
+    },
+    [transpileAllTsFile]
+  );
 
   //effect ****************
   // connecterの初期化
@@ -515,17 +573,6 @@ export const useEditor = () => {
       setIsEditedAfterSave(false);
     };
   }, []);
-
-  // ファイル選択時のエディター切り替え
-  useEffect(() => {
-    if (!selectedNodeId || !monaco) return;
-    const path = findPathById([folder], selectedNodeId);
-    const selectedModel = monaco.editor
-      .getModels()
-      .find((model) => model.uri.path === path);
-    if (!selectedModel) return;
-    leftEditorRef.current?.setModel(selectedModel);
-  }, [monaco, selectedNodeId, folder]);
 
   // ファイル追加時のモデル追加, 削除
   useEffect(() => {

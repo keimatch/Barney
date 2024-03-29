@@ -74,7 +74,7 @@ const SettingMenu = ({
                 mr={3}
               />
               <FormLabel htmlFor="email-alerts" mb="0" fontSize="12px">
-                Enable Build
+                Enable Bundle
               </FormLabel>
             </FormControl>
           </MenuItem>
