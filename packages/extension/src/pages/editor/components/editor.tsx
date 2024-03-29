@@ -6,7 +6,7 @@ import MonacoEditor, {
 } from "@monaco-editor/react";
 import monaco from "monaco-editor";
 
-import { IconButton, Box } from "@chakra-ui/react";
+import { IconButton, Box, Tooltip } from "@chakra-ui/react";
 import { VscDebugStart } from "react-icons/vsc";
 import { GrClearOption } from "react-icons/gr";
 import { SiTypescript, SiJavascript } from "react-icons/si";
@@ -75,52 +75,63 @@ export const Editor = ({
       <Box pos="absolute" display="flex" gap={1} top={2} right={4}>
         {selectedNode?.type === "typescript" && (
           <>
+            <Tooltip label="Execute script" fontSize="xs">
+              <IconButton
+                aria-label="execute script"
+                size="xs"
+                icon={<VscDebugStart />}
+                onClick={onInjectScript}
+              />
+            </Tooltip>
+            <Tooltip label="Switch Script Type" fontSize="xs">
+              <IconButton
+                aria-label="switch script type"
+                size="xs"
+                colorScheme={scriptType === "typescript" ? "blue" : "yellow"}
+                icon={
+                  scriptType === "typescript" ? (
+                    <SiTypescript />
+                  ) : (
+                    <SiJavascript />
+                  )
+                }
+                onClick={
+                  scriptType === "javascript"
+                    ? changeScriptType("typescript")
+                    : changeScriptType("javascript")
+                }
+              />
+            </Tooltip>
+          </>
+        )}
+        {selectedNode?.id === BUNDLE_FILE_ID && (
+          <Tooltip label="Bundle" fontSize="xs">
             <IconButton
-              aria-label="change script type"
-              size="xs"
-              icon={
-                scriptType === "javascript" ? (
-                  <SiTypescript />
-                ) : (
-                  <SiJavascript />
-                )
-              }
-              onClick={
-                scriptType === "javascript"
-                  ? changeScriptType("typescript")
-                  : changeScriptType("javascript")
-              }
-            />
-            <IconButton
-              aria-label="execute script"
+              aria-label="bundle"
               size="xs"
               icon={<VscDebugStart />}
               onClick={onInjectScript}
             />
-          </>
-        )}
-        {selectedNode?.id === BUNDLE_FILE_ID && (
-          <IconButton
-            aria-label="execute script"
-            size="xs"
-            icon={<VscDebugStart />}
-            onClick={onInjectScript}
-          />
+          </Tooltip>
         )}
         {selectedNode?.type === "css" && (
           <>
-            <IconButton
-              aria-label="clear css"
-              size="xs"
-              icon={<GrClearOption />}
-              onClick={handleClearCss}
-            />
-            <IconButton
-              aria-label="insert css"
-              size="xs"
-              icon={<VscDebugStart />}
-              onClick={handleInsertCss}
-            />
+            <Tooltip label="Clear CSS" fontSize="xs">
+              <IconButton
+                aria-label="clear css"
+                size="xs"
+                icon={<GrClearOption />}
+                onClick={handleClearCss}
+              />
+            </Tooltip>
+            <Tooltip label="Insert CSS" fontSize="xs">
+              <IconButton
+                aria-label="insert css"
+                size="xs"
+                icon={<VscDebugStart />}
+                onClick={handleInsertCss}
+              />
+            </Tooltip>
           </>
         )}
       </Box>

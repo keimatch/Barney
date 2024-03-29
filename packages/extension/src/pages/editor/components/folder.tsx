@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Box,
+  Text,
   Button,
   Menu,
   MenuButton,
@@ -51,6 +52,7 @@ const Folder = ({
   const boxRef = React.useRef<HTMLDivElement>(null);
   const [isHover, setIsHover] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
   const [isFolderOpen, setIsFolderOpen] = useState(true);
   const [didOutsideClicked, setDidOutsideClicked] = useState(false);
 
@@ -109,6 +111,15 @@ const Folder = ({
   const onMenuClose = useCallback(() => {
     setIsHover(false);
     setIsMenuOpen(false);
+  }, []);
+
+  const onOpenFileMenu = useCallback(() => {
+    console.log("open file menu");
+    setIsFileMenuOpen(true);
+  }, []);
+
+  const onMenuCloseFile = useCallback(() => {
+    setIsFileMenuOpen(false);
   }, []);
 
   const onMouseOver = useCallback(() => {
@@ -204,21 +215,40 @@ const Folder = ({
                 <MenuItem onClick={onCreateFolder} icon={<VscFolder />}>
                   New Folder
                 </MenuItem>
-                <MenuItem
-                  onClick={onCreateFile("typescript")}
-                  icon={<VscFileCode />}
-                >
-                  New Typescript
-                </MenuItem>
-                <MenuItem onClick={onCreateFile("css")} icon={<VscFileCode />}>
-                  New CSS
-                </MenuItem>
-                <MenuItem
-                  onClick={onCreateFile("markdown")}
-                  icon={<VscFileCode />}
-                >
-                  New Markdown
-                </MenuItem>
+                <Menu placement="right" onClose={onMenuCloseFile}>
+                  <MenuButton
+                    width="100%"
+                    as={Button}
+                    onClick={onOpenFileMenu}
+                    display="flex"
+                    justifyContent="flex-start"
+                    variant="ghost"
+                    size="sm"
+                    leftIcon={<VscFileCode />}
+                  >
+                    New File ...
+                  </MenuButton>
+                  <MenuList>
+                    <MenuItem
+                      onClick={onCreateFile("typescript")}
+                      icon={<VscFileCode />}
+                    >
+                      Typescript
+                    </MenuItem>
+                    <MenuItem
+                      onClick={onCreateFile("css")}
+                      icon={<VscFileCode />}
+                    >
+                      CSS
+                    </MenuItem>
+                    <MenuItem
+                      onClick={onCreateFile("markdown")}
+                      icon={<VscFileCode />}
+                    >
+                      Markdown
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
                 <MenuItem
                   onClick={onStartEdit(folder.id)}
                   icon={<VscFileCode />}

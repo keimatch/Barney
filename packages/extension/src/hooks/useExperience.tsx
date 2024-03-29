@@ -73,7 +73,7 @@ export const defaultFolderRoot: Node = {
       name: "readme.md",
       parentId: "1",
       type: "markdown",
-      content: "# Hello World",
+      content: "# Hello",
     },
   ],
 };

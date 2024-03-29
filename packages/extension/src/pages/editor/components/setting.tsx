@@ -16,6 +16,8 @@ import {
   Select,
   MenuDivider,
   Button,
+  Tooltip,
+  Text,
 } from "@chakra-ui/react";
 import { VscChevronDown, VscSave, VscSettingsGear } from "react-icons/vsc";
 import { Setting } from "../../../types/editor";
@@ -57,23 +59,25 @@ const SettingMenu = ({
   return (
     <Box width={7} display="flex" justifyContent="center" alignItems="center">
       <Menu closeOnSelect={false}>
-        <MenuButton
-          as={IconButton}
-          aria-label="Options"
-          icon={<VscSettingsGear />}
-          variant="ghost"
-          size="xs"
-        />
+        <Tooltip label="Setting" fontSize="xs">
+          <MenuButton
+            as={IconButton}
+            aria-label="Options"
+            icon={<VscSettingsGear />}
+            variant="ghost"
+            size="xs"
+          />
+        </Tooltip>
         <MenuList>
           <MenuItem>
             <FormControl display="flex" alignItems="center">
               <Switch
-                id="email-alerts"
+                id="bundle-switch"
                 isChecked={setting.enableBundle}
                 onChange={onChangeEnableBundle}
                 mr={3}
               />
-              <FormLabel htmlFor="email-alerts" mb="0" fontSize="12px">
+              <FormLabel htmlFor="bundle-switch" mb="0" fontSize="12px">
                 Enable Bundle
               </FormLabel>
             </FormControl>
@@ -92,11 +96,15 @@ const SettingMenu = ({
               width="100%"
               pl={5}
               display="flex"
-              alignItems="center"
+              justifyContent="flex-start"
+              variant="ghost"
               borderRadius={0}
               size="xs"
+              textAlign="left"
             >
-              Target ESM Version
+              <Text fontSize="12px" pl={4}>
+                Target ESM Version
+              </Text>
             </MenuButton>
             <MenuList>
               <MenuOptionGroup

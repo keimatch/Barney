@@ -1,5 +1,5 @@
 import React from "react";
-import { IconButton, Box, InputGroup, Input } from "@chakra-ui/react";
+import { IconButton, Box, InputGroup, Input, Tooltip } from "@chakra-ui/react";
 import { VscChevronLeft, VscSave, VscSettingsGear } from "react-icons/vsc";
 import { SiRollupdotjs } from "react-icons/si";
 import { PiTextIndentBold } from "react-icons/pi";
@@ -36,15 +36,17 @@ const Header = ({
       borderBottom="0.5px solid rgba(255, 255,255,0.1)"
     >
       <Box>
-        <IconButton
-          aria-label="back"
-          size="sm"
-          icon={<VscChevronLeft />}
-          variant="ghost"
-          onClick={() => {
-            moveToFileList();
-          }}
-        />
+        <Tooltip label="Home" fontSize="xs">
+          <IconButton
+            aria-label="Home"
+            size="sm"
+            icon={<VscChevronLeft />}
+            variant="ghost"
+            onClick={() => {
+              moveToFileList();
+            }}
+          />
+        </Tooltip>
         {/* <IconButton
             aria-label="back"
             size="sm"
@@ -76,31 +78,38 @@ const Header = ({
         </Box>
       </Box>
       <Box display="flex" gap={1}>
-        <IconButton
-          aria-label="back"
-          size="sm"
-          hidden={!setting.enableBundle}
-          icon={<SiRollupdotjs />}
-          variant="ghost"
-          onClick={bundle}
-        />
-        <IconButton
-          aria-label="back"
-          size="sm"
-          icon={<PiTextIndentBold />}
-          variant="ghost"
-          onClick={handleFormat}
-        />
-        <IconButton
-          aria-label="back"
-          size="sm"
-          icon={<VscSave />}
-          variant="ghost"
-          disabled={!isEdited}
-          onClick={() => {
-            onSave();
-          }}
-        />
+        <Tooltip label="Bundle" fontSize="xs">
+          <IconButton
+            aria-label="bundle"
+            size="sm"
+            hidden={!setting.enableBundle}
+            icon={<SiRollupdotjs />}
+            variant="ghost"
+            onClick={bundle}
+          />
+        </Tooltip>
+        <Tooltip label="Format" fontSize="xs">
+          <IconButton
+            aria-label="format"
+            size="sm"
+            icon={<PiTextIndentBold />}
+            variant="ghost"
+            onClick={handleFormat}
+          />
+        </Tooltip>
+        <Tooltip label="Save" fontSize="xs">
+          <IconButton
+            aria-label="save"
+            size="sm"
+            icon={<VscSave />}
+            variant="ghost"
+            disabled={!isEdited}
+            onClick={() => {
+              onSave();
+            }}
+          />
+        </Tooltip>
+
         <SettingMenu setting={setting} setSetting={setSetting} />
       </Box>
     </Box>
