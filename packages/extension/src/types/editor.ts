@@ -27,3 +27,8 @@ export type FlatPath = {
   data: string;
   type: Language;
 };
+
+export type Setting = {
+  id: "setting";
+  enableBundle: boolean;
+};

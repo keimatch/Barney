@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 
 import { Experience, Node } from "../types/experience";
 import { db } from "../db/experience";
+import { Result } from "../util/type";
 
 type ContextValue = [
   { experiences: Experience[]; selectedExperience: Experience | undefined },
@@ -18,7 +19,7 @@ type ContextValue = [
     addExperience: () => Promise<Experience>;
     selectExperience: (experience: Experience) => void;
     deleteExperience: (experience: Experience) => void;
-    updateExperience: (experience: Experience) => Promise<void>;
+    updateExperience: (experience: Experience) => Promise<Result<null>>;
   }
 ];
 
@@ -58,17 +59,10 @@ export const defaultFolderRoot: Node = {
       name: "main.ts",
       parentId: "1",
       type: "typescript",
-      content: 'import exp from "./exp"; exp();',
+      content: "",
     },
     {
       id: "3",
-      name: "exp.ts",
-      parentId: "1",
-      type: "typescript",
-      content: "const exp = ()=>{console.log('foo')}; export default exp;",
-    },
-    {
-      id: "4",
       name: "styles.css",
       parentId: "1",
       type: "css",
@@ -113,13 +107,34 @@ export const ExperienceProvider = ({
     setSelectedExperience(ex);
   }, []);
 
+  const validateExperience = useCallback(
+    (experience: Experience): Result<null> => {
+      if (!experience.name) {
+        return { success: false, error: "name is required" };
+      }
+      if (!experience.url) {
+        return { success: false, error: "url is required" };
+      }
+      if (!experience.folder) {
+        return { success: false, error: "folder is required" };
+      }
+      return { success: true, value: null };
+    },
+    []
+  );
+
   const updateExperience = useCallback(
-    async (newExperience: Experience) => {
+    async (newExperience: Experience): Promise<Result<null>> => {
+      const validate = validateExperience(newExperience);
+      if (!validate.success) {
+        return validate;
+      }
       await db.experiences.update(newExperience.id, newExperience);
 
       selectExperience(newExperience);
+      return validate;
     },
-    [selectExperience]
+    [selectExperience, validateExperience]
   );
 
   const value: ContextValue = [
