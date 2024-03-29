@@ -72,7 +72,7 @@ function FileList() {
         url: exp.url,
         description: "",
         createdAt: dayjs.unix(exp.createdAt).format("YYYY/MM/DD HH:mm:ss"),
-        updatedAt: dayjs.unix(exp.createdAt).format("YYYY/MM/DD HH:mm:ss"),
+        updatedAt: dayjs.unix(exp.updatedAt).format("YYYY/MM/DD HH:mm:ss"),
         menu: (
           <Menu>
             <MenuButton

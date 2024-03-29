@@ -2,6 +2,7 @@ export interface Experience {
   id: number;
   name: string;
   createdAt: number;
+  updatedAt: number;
   url: string;
   folder: Node;
 }

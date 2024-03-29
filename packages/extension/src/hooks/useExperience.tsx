@@ -33,6 +33,7 @@ const defaultValue: ContextValue = [
       id: dayjs().unix(),
       name: "untitled",
       createdAt: dayjs().unix(),
+      updatedAt: dayjs().unix(),
       url: "",
       folder: {
         type: "folder",
@@ -59,7 +60,7 @@ export const defaultFolderRoot: Node = {
       name: "main.ts",
       parentId: "1",
       type: "typescript",
-      content: "const a = 1;",
+      content: "const a: number = 1;",
     },
     {
       id: "3",
@@ -99,6 +100,7 @@ export const ExperienceProvider = ({
       id: timestamp,
       name: "untitled",
       createdAt: timestamp,
+      updatedAt: timestamp,
       url: "any-url",
       folder: defaultFolderRoot,
     };
@@ -136,6 +138,7 @@ export const ExperienceProvider = ({
       if (!validate.success) {
         return validate;
       }
+      newExperience.updatedAt = dayjs().unix();
       await db.experiences.update(newExperience.id, newExperience);
 
       selectExperience(newExperience);
