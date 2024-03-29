@@ -59,7 +59,7 @@ export const defaultFolderRoot: Node = {
       name: "main.ts",
       parentId: "1",
       type: "typescript",
-      content: "",
+      content: "const a = 1;",
     },
     {
       id: "3",

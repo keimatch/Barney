@@ -19,6 +19,7 @@ import {
   VscFileCode,
   VscChevronRight,
 } from "react-icons/vsc";
+import { SiTypescript, SiCss3, SiMarkdown } from "react-icons/si";
 import { RiDeleteBin3Line } from "react-icons/ri";
 
 import { Language, Node, NodeType } from "../../../types/experience";
@@ -114,13 +115,13 @@ const Folder = ({
   }, []);
 
   const onOpenFileMenu = useCallback(() => {
-    console.log("open file menu");
     setIsFileMenuOpen(true);
   }, []);
 
   const onMenuCloseFile = useCallback(() => {
+    onMenuClose();
     setIsFileMenuOpen(false);
-  }, []);
+  }, [onMenuClose]);
 
   const onMouseOver = useCallback(() => {
     setIsHover(true);
@@ -201,7 +202,7 @@ const Folder = ({
             justifyContent="center"
             alignItems="center"
           >
-            <Menu onOpen={onMenuOpen} onClose={onMenuClose}>
+            <Menu isOpen={isMenuOpen} onOpen={onMenuOpen} onClose={onMenuClose}>
               <MenuButton
                 textAlign="center"
                 as={IconButton}
@@ -215,35 +216,39 @@ const Folder = ({
                 <MenuItem onClick={onCreateFolder} icon={<VscFolder />}>
                   New Folder
                 </MenuItem>
-                <Menu placement="right" onClose={onMenuCloseFile}>
+                <Menu
+                  placement="right"
+                  isOpen={isFileMenuOpen}
+                  onClose={onMenuCloseFile}
+                >
                   <MenuButton
+                    pl={3}
                     width="100%"
                     as={Button}
                     onClick={onOpenFileMenu}
                     display="flex"
                     justifyContent="flex-start"
                     variant="ghost"
-                    size="sm"
+                    size="xs"
+                    textAlign="left"
+                    borderRadius={0}
                     leftIcon={<VscFileCode />}
                   >
-                    New File ...
+                    <Text fontSize="12px">New File ...</Text>
                   </MenuButton>
                   <MenuList>
                     <MenuItem
                       onClick={onCreateFile("typescript")}
-                      icon={<VscFileCode />}
+                      icon={<SiTypescript />}
                     >
                       Typescript
                     </MenuItem>
-                    <MenuItem
-                      onClick={onCreateFile("css")}
-                      icon={<VscFileCode />}
-                    >
+                    <MenuItem onClick={onCreateFile("css")} icon={<SiCss3 />}>
                       CSS
                     </MenuItem>
                     <MenuItem
                       onClick={onCreateFile("markdown")}
-                      icon={<VscFileCode />}
+                      icon={<SiMarkdown />}
                     >
                       Markdown
                     </MenuItem>
