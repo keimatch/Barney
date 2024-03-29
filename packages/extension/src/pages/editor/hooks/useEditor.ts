@@ -36,7 +36,7 @@ import {
   findPathById,
   preBundle,
   BUNDLE_FILE_ID,
-} from "../../../logics/editor";
+} from "../logics/editor";
 import { difference, xor } from "../../../util/util";
 import { Setting } from "../../../types/editor";
 import { useLiveQuery } from "dexie-react-hooks";
@@ -108,7 +108,7 @@ export const useEditor = () => {
             newFolder,
             convertToJsId(nodeId),
             key,
-            transpile(value)
+            transpile(value, setting?.esmVersion)
           );
           const jsModel = monaco.editor.getModel(
             monaco.Uri.from({
@@ -120,14 +120,14 @@ export const useEditor = () => {
             console.error("jsModel is not found");
             return;
           }
-          jsModel.setValue(transpile(value));
+          jsModel.setValue(transpile(value, setting?.esmVersion));
           setFolder({ ...compiledFolder });
         }
       }
 
       setIsEditedAfterSave(true);
     },
-    [folder, scriptType, monaco]
+    [folder, scriptType, monaco, setting]
   );
 
   const onChangeMeta = useCallback(
@@ -266,13 +266,13 @@ export const useEditor = () => {
       }
 
       if (type === "typescript") {
-        const js = transpile(code);
+        const js = transpile(code, setting?.esmVersion);
         injectScript(js);
       } else {
         injectScript(code);
       }
     },
-    []
+    [setting]
   );
 
   const handleInsertCss = useCallback(() => {

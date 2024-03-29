@@ -12,7 +12,7 @@ import { GrClearOption } from "react-icons/gr";
 import { SiTypescript, SiJavascript } from "react-icons/si";
 import { Language } from "../../../types/experience";
 import { FlatPath } from "../../../types/editor";
-import { BUNDLE_FILE_ID } from "../../../logics/editor";
+import { BUNDLE_FILE_ID } from "../logics/editor";
 
 export const Editor = ({
   beforeMount,

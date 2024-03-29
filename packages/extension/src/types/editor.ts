@@ -1,3 +1,4 @@
+import ts from "typescript";
 import { Language } from "./experience";
 
 export interface Message {
@@ -31,4 +32,5 @@ export type FlatPath = {
 export type Setting = {
   id: "setting";
   enableBundle: boolean;
+  esmVersion: ts.ScriptTarget;
 };

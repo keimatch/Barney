@@ -1,7 +1,7 @@
 import * as monaco from "monaco-editor";
 import ts from "typescript";
-import { Language, Node, NodeType } from "../types/experience";
-import { FlatPath } from "../types/editor";
+import { Language, Node, NodeType } from "../../../types/experience";
+import { FlatPath } from "../../../types/editor";
 
 export const BUNDLE_FILE_ID = "bundle";
 
@@ -30,11 +30,14 @@ export const updateNodePropertyById = <T extends keyof Node>(
   return node;
 };
 
-export const transpile = (tsCode: string) => {
+export const transpile = (
+  tsCode: string,
+  esmVersion = ts.ScriptTarget.ESNext
+) => {
   const jsCode = ts.transpileModule(tsCode, {
     compilerOptions: {
       module: ts.ModuleKind.ESNext,
-      target: ts.ScriptTarget.ES2015,
+      target: esmVersion,
     },
   });
   return jsCode.outputText;

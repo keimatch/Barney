@@ -4,7 +4,7 @@ import type {
   Message,
   SCRIPT_MESSAGE,
 } from "../types/editor";
-import { transpile } from "./editor";
+import { transpile } from "../pages/editor/logics/editor";
 
 const backgroundPageConnection = chrome.runtime.connect({
   name: "panel",
