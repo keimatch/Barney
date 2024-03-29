@@ -12,7 +12,13 @@ import {
   useOutsideClick,
 } from "@chakra-ui/react";
 import { VscFile, VscKebabVertical, VscFileCode } from "react-icons/vsc";
-import { SiTypescript, SiJavascript, SiCss3, SiHtml5 } from "react-icons/si";
+import {
+  SiTypescript,
+  SiJavascript,
+  SiCss3,
+  SiHtml5,
+  SiMarkdown,
+} from "react-icons/si";
 import { RiDeleteBin3Line } from "react-icons/ri";
 
 import { Language, Node } from "../../../types/experience";
@@ -28,6 +34,8 @@ const getIcon = (type: Language | "folder") => {
     return <SiCss3 />;
   } else if (type === "html") {
     return <SiHtml5 />;
+  } else if (type === "markdown") {
+    return <SiMarkdown />;
   } else {
     return <VscFile />;
   }
@@ -53,6 +61,7 @@ const File = ({
   handleDeleteFile: (nodeId: string, parentId: string) => void;
 }) => {
   const boxRef = React.useRef<HTMLDivElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
   const [isHover, setIsHover] = useState(false);
   const [didOutsideClicked, setDidOutsideClicked] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -94,9 +103,11 @@ const File = ({
   }, [file.id, file.parentId, handleDeleteFile]);
 
   useOutsideClick({
-    ref: boxRef,
+    ref: inputRef,
     handler: () => {
-      onStartEdit(undefined)();
+      if (isEditing) {
+        onStartEdit(undefined)();
+      }
     },
   });
 
@@ -117,8 +128,9 @@ const File = ({
   return (
     <Box
       ref={boxRef}
-      onClick={() => {
-        setDidOutsideClicked(false);
+      onClick={(e) => {
+        e.stopPropagation();
+        // setDidOutsideClicked(false);
       }}
     >
       <Box display="flex">
@@ -141,6 +153,7 @@ const File = ({
           >
             {isEditing ? (
               <Input
+                ref={inputRef}
                 size="xs"
                 value={file.name}
                 onChange={handleOnChangeName}
