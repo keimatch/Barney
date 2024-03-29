@@ -99,11 +99,15 @@ export const useEditor = () => {
     (nodeId: string, value: string, key: keyof Node) => {
       if (!monaco) return;
       const newFolder = updateNodePropertyById(folder, nodeId, key, value);
-
       if (key !== "content") {
         setFolder({ ...newFolder });
       } else {
-        if (scriptType !== "typescript") {
+        if (
+          selectedNode?.type! === "javascript" ||
+          selectedNode?.type !== "typescript"
+        ) {
+          setFolder({ ...newFolder });
+        } else if (scriptType === "javascript") {
           setFolder({ ...newFolder });
         } else {
           const compiledFolder = updateNodePropertyById(
@@ -129,12 +133,11 @@ export const useEditor = () => {
 
       setIsEditedAfterSave(true);
     },
-    [folder, scriptType, monaco, setting]
+    [folder, scriptType, monaco, setting, selectedNode]
   );
 
   const transpileAllTsFile = useCallback(
     (esmVersion: ts.ScriptTarget) => {
-      console.log("esmVersion", esmVersion);
       if (!monaco) {
         console.error("monaco is not found");
         return;
@@ -204,6 +207,7 @@ export const useEditor = () => {
       console.error("update failed: ", result.error);
       return;
     }
+    console.info("saved successfully");
     setIsEditedAfterSave(false);
   }, [
     folder,
@@ -465,7 +469,7 @@ export const useEditor = () => {
         })
       );
       if (!jsModel) {
-        console.log("createdModel is: ", path);
+        console.info("createdModel is: ", path);
         monaco.editor.createModel(
           data,
           "javascript",

@@ -128,9 +128,8 @@ const File = ({
   return (
     <Box
       ref={boxRef}
-      onClick={(e) => {
-        e.stopPropagation();
-        // setDidOutsideClicked(false);
+      onClick={() => {
+        setDidOutsideClicked(false);
       }}
     >
       <Box display="flex">
