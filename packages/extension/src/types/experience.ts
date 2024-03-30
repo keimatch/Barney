@@ -1,6 +1,7 @@
 export interface Experience {
   id: number;
   name: string;
+  description: string;
   createdAt: number;
   updatedAt: number;
   url: string;

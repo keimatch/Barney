@@ -21,11 +21,11 @@ import {
   MenuItem,
   IconButton,
 } from "@chakra-ui/react";
-import { VscAdd, VscSearch, VscKebabVertical } from "react-icons/vsc";
-import dayjs from "dayjs";
+import { VscAdd, VscSearch, VscKebabVertical, VscError } from "react-icons/vsc";
 
 import { useFileList } from "./useFileList";
 import { Experience } from "../../types/experience";
+import { getFormattedDate } from "./utils/datetime";
 
 interface TableRow {
   id: number;
@@ -55,7 +55,10 @@ const DefinedColumns: TableColumn[] = [
 ];
 
 function FileList() {
-  const [{ experiences }, { onCreate, onDelete, onSelect }] = useFileList();
+  const [
+    { experiences, searchText },
+    { onCreate, onDelete, onSelect, onSearch, clearSearch },
+  ] = useFileList();
 
   const generateTableData = (
     experiences: Experience[]
@@ -71,8 +74,8 @@ function FileList() {
         name: exp.name,
         url: exp.url,
         description: "",
-        createdAt: dayjs.unix(exp.createdAt).format("YYYY/MM/DD HH:mm:ss"),
-        updatedAt: dayjs.unix(exp.updatedAt).format("YYYY/MM/DD HH:mm:ss"),
+        createdAt: getFormattedDate(exp.createdAt),
+        updatedAt: getFormattedDate(exp.updatedAt),
         menu: (
           <Menu>
             <MenuButton
@@ -117,10 +120,28 @@ function FileList() {
         >
           <HStack>
             <InputGroup size="sm">
-              <InputLeftElement pointerEvents="none">
-                <VscSearch />
+              <InputLeftElement width="2rem">
+                {searchText ? (
+                  <IconButton
+                    aria-label="Search"
+                    icon={<VscError />}
+                    onClick={clearSearch}
+                    size="xs"
+                  />
+                ) : (
+                  <IconButton
+                    aria-label="Search"
+                    icon={<VscSearch />}
+                    size="xs"
+                  />
+                )}
               </InputLeftElement>
-              <Input placeholder="Search Anything" />
+              <Input
+                pl="2rem"
+                placeholder="Search Anything"
+                value={searchText}
+                onChange={onSearch}
+              />
             </InputGroup>
 
             <Button

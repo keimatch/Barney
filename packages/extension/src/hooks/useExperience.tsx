@@ -34,6 +34,7 @@ const defaultValue: ContextValue = [
       name: "untitled",
       createdAt: dayjs().unix(),
       updatedAt: dayjs().unix(),
+      description: "",
       url: "",
       folder: {
         type: "folder",
@@ -99,6 +100,7 @@ export const ExperienceProvider = ({
     const newExperience: Experience = {
       id: timestamp,
       name: "untitled",
+      description: "",
       createdAt: timestamp,
       updatedAt: timestamp,
       url: "any-url",

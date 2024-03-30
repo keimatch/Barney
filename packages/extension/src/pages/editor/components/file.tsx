@@ -63,7 +63,6 @@ const File = ({
   const boxRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [isHover, setIsHover] = useState(false);
-  const [didOutsideClicked, setDidOutsideClicked] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const paddingLeft = offsetPd + depth * 20;
@@ -126,12 +125,7 @@ const File = ({
   }, [onMouseOver, onMouseLeave]);
 
   return (
-    <Box
-      ref={boxRef}
-      onClick={() => {
-        setDidOutsideClicked(false);
-      }}
-    >
+    <Box ref={boxRef}>
       <Box display="flex">
         <Box flex={1}>
           <Button
