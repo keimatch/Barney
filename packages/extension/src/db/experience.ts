@@ -10,7 +10,7 @@ export class MySubClassedDexie extends Dexie {
     super("myDatabase");
     this.version(3).stores({
       experiences: "&id, name, createdAt, url, folder",
-      settings: "&id, enableBundle esmVersion",
+      settings: "&id, enableBundle, esmVersion",
     });
   }
 }
